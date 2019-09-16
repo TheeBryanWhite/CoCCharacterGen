@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Random;
 
 public class Main {
 
@@ -20,7 +21,7 @@ public class Main {
         // Bypass Namefake API https cert business
         certTrust.trustMgr();
 
-        System.out.println(newCharacterData.newCharacterName(apiUrl));
+        System.out.println(rollDice.rollDSix());
 
     }
 
@@ -169,6 +170,18 @@ public class Main {
 
         }
 
+    }
+
+    public static class rollDice {
+
+        public static int rollDSix() {
+
+            Random random = new Random();
+
+            int randomInteger = random.nextInt(6);
+
+            return randomInteger;
+        }
     }
 
     public static class newCharacterData {
