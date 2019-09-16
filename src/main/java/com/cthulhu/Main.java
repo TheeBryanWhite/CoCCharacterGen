@@ -16,12 +16,20 @@ public class Main {
 
     public static void main(String[] args) throws IOException, JSONException, NoSuchAlgorithmException, KeyManagementException {
 
-        String apiUrl = "https://api.namefake.com/";
-
         // Bypass Namefake API https cert business
         certTrust.trustMgr();
 
-        System.out.println(rollDice.rollDSix());
+        newCharacterData.configureStats();
+
+        System.out.println(newCharacterData.charName);
+        System.out.println(newCharacterData.strVal);
+        System.out.println(newCharacterData.intelVal);
+        System.out.println(newCharacterData.conVal);
+        System.out.println(newCharacterData.appVal);
+        System.out.println(newCharacterData.powVal);
+        System.out.println(newCharacterData.sizeVal);
+        System.out.println(newCharacterData.eduVal);
+        System.out.println(newCharacterData.dexVal);
 
     }
 
@@ -174,17 +182,45 @@ public class Main {
 
     public static class rollDice {
 
-        public static int rollDSix() {
+        public static int rollDSix(int numDice) {
 
             Random random = new Random();
 
-            int randomInteger = random.nextInt(6);
+            int i;
+            int randomInteger = 0;
+            int totalInt = 0;
 
-            return randomInteger;
+            // Roll them bones! No zeroes, though
+            for (i = 0; i < numDice; i++) {
+                randomInteger = random.nextInt(6) + 1;
+
+                totalInt = totalInt + randomInteger;
+            }
+
+            return totalInt;
         }
     }
 
     public static class newCharacterData {
+
+        private static String charName;
+
+        static {
+            try {
+                charName = newCharacterName(Globals.apiUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private static String strVal;
+        private static String intelVal;
+        private static String conVal;
+        private static String sizeVal;
+        private static String dexVal;
+        private static String appVal;
+        private static String powVal;
+        private static String eduVal;
 
         public static String newCharacterName(String url) throws IOException {
 
@@ -195,6 +231,61 @@ public class Main {
 
             return name;
 
+        }
+
+        public static void configureStats() {
+
+            String[] skillsToConfigure = characterOptions.characteristics();
+
+            int i;
+
+            for (i = 0; i < skillsToConfigure.length; i++) {
+
+                int thisScore;
+
+                String thisSkill = skillsToConfigure[i];
+
+                // Switch to determine stat and assign score
+                switch(thisSkill) {
+
+                    case "strength":
+                       thisScore = rollDice.rollDSix(3);
+                       strVal = "STR: " + Integer.toString(thisScore);
+                       break;
+
+                    case "dexterity":
+                        thisScore = rollDice.rollDSix(3);
+                        dexVal = "DEX: " + Integer.toString(thisScore);
+
+                    case "intelligence":
+                        thisScore = rollDice.rollDSix(2);
+                        intelVal = "INT: " + Integer.toString(thisScore + 6);
+
+                    case "constitution":
+                        thisScore = rollDice.rollDSix(3);
+                        conVal = "CON: " + Integer.toString(thisScore);
+
+                    case "appearance":
+                        thisScore = rollDice.rollDSix(3);
+                        appVal = "APP: " + Integer.toString(thisScore);
+
+                    case "power":
+                        thisScore = rollDice.rollDSix(3);
+                        powVal = "POW: " + Integer.toString(thisScore);
+
+                    case "size":
+                        thisScore = rollDice.rollDSix(2);
+                        sizeVal = "SIZ: " + Integer.toString(thisScore + 6);
+
+                    case "education":
+                        thisScore = rollDice.rollDSix(2);
+                        eduVal = "EDU: " + Integer.toString(thisScore + 6);
+
+
+                    default:
+                        break;
+                }
+            }
         }
 
     }
