@@ -20,11 +20,8 @@ public class Main {
         // Bypass Namefake API https cert business
         certTrust.trustMgr();
 
-        // Hit that API and fetch the data
-        JSONObject json = JSONFetch.readJsonFromUrl(apiUrl);
+        System.out.println(newCharacterData.newCharacterName(apiUrl));
 
-        // Gimme a name, bro
-        System.out.println(json.get("name"));
     }
 
     public static class certTrust {
@@ -93,6 +90,97 @@ public class Main {
                 inputStream.close();
 
             }
+
+        }
+
+    }
+
+    public static class characterOptions {
+
+        public static String[] characteristics() {
+
+            String[] charArray = {
+                    "strength",
+                    "dexterity",
+                    "intelligence",
+                    "constitution",
+                    "appearance",
+                    "power",
+                    "size",
+                    "education"
+            };
+
+            return charArray;
+
+        }
+
+        public static String[] skills() {
+
+            String[] skillsArray = {
+                    "accounting",
+                    "anthropology",
+                    "appraise",
+                    "archaeology",
+                    "art/craft",
+                    "charm",
+                    "climb",
+                    "credit rating",
+                    "chtulhu mythos",
+                    "disguise",
+                    "dodge",
+                    "drive (auto)",
+                    "electric repair",
+                    "fast talk",
+                    "fighting (brawl)",
+                    "firearms (handgun)",
+                    "firearms (rifle/shotgun)",
+                    "first aid",
+                    "history",
+                    "intimidate",
+                    "jump",
+                    "language (other)",
+                    "language (own)",
+                    "law",
+                    "library use",
+                    "listen",
+                    "locksmith",
+                    "mechanical repair",
+                    "medicine",
+                    "natural world",
+                    "navigate",
+                    "occult",
+                    "operate heavy machine",
+                    "persuade",
+                    "pilot",
+                    "psychology",
+                    "psychoanalysis",
+                    "ride",
+                    "science",
+                    "sleight of hand",
+                    "spot hidden",
+                    "stealth",
+                    "survival",
+                    "swim",
+                    "throw",
+                    "track"
+            };
+
+            return skillsArray;
+
+        }
+
+    }
+
+    public static class newCharacterData {
+
+        public static String newCharacterName(String url) throws IOException {
+
+            // Hit that API and fetch the data
+            JSONObject json = JSONFetch.readJsonFromUrl(url);
+
+            String name = (String) json.get("name");
+
+            return name;
 
         }
 
