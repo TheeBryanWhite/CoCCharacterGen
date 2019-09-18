@@ -3,25 +3,22 @@ package com.cthulhu;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.net.ssl.*;
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.util.Random;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, JSONException, NoSuchAlgorithmException, KeyManagementException {
+    public static void main(String[] args) throws JSONException, KeyManagementException, NoSuchAlgorithmException {
 
         // Bypass Namefake API https cert business
-        certTrust.trustMgr();
+        com.cthulhu.CertTrust.trustMgr();
 
         newCharacterData.configureStats();
 
         System.out.println(newCharacterData.charName);
+        System.out.println(newCharacterData.hitPoints);
         System.out.println(newCharacterData.strVal);
         System.out.println(newCharacterData.intelVal);
         System.out.println(newCharacterData.conVal);
@@ -30,175 +27,38 @@ public class Main {
         System.out.println(newCharacterData.sizeVal);
         System.out.println(newCharacterData.eduVal);
         System.out.println(newCharacterData.dexVal);
-
-    }
-
-    public static class certTrust {
-
-        public static void trustMgr () throws NoSuchAlgorithmException, KeyManagementException {
-
-            TrustManager[] trustAllCerts = new TrustManager[] {
-
-                    new X509TrustManager() {
-
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-
-                    }
-
-            };
-
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            };
-
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-
-        }
-    }
-
-    public static class JSONFetch {
-
-        private static String readData(Reader reader) throws IOException {
-
-            StringBuilder stringBuilder = new StringBuilder();
-
-            int count;
-
-            while ((count = reader.read()) != -1) {
-                stringBuilder.append((char) count);
-            }
-
-            return stringBuilder.toString();
-
-        }
-
-        public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-
-            InputStream inputStream = new URL(url).openStream();
-
-            try {
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
-                String jsonString = readData(reader);
-                JSONObject jsonObjString = new JSONObject(jsonString);
-
-                return jsonObjString;
-
-            } finally {
-
-                inputStream.close();
-
-            }
-
-        }
+        System.out.println(newCharacterData.luckVal);
 
     }
 
     public static class characterOptions {
 
-        public static String[] characteristics() {
+        public enum characteristics {
+            Strength ("strength"),
+            Dexterity ("dexterity"),
+            Intelligence ("intelligence"),
+            Constitution ("constitution"),
+            Appearance ("appearance"),
+            Power ("power"),
+            Size ("size"),
+            Education ("education");
 
-            String[] charArray = {
-                    "strength",
-                    "dexterity",
-                    "intelligence",
-                    "constitution",
-                    "appearance",
-                    "power",
-                    "size",
-                    "education"
-            };
+            public String characteristic;
 
-            return charArray;
-
-        }
-
-        public static String[] skills() {
-
-            String[] skillsArray = {
-                    "accounting",
-                    "anthropology",
-                    "appraise",
-                    "archaeology",
-                    "art/craft",
-                    "charm",
-                    "climb",
-                    "credit rating",
-                    "chtulhu mythos",
-                    "disguise",
-                    "dodge",
-                    "drive (auto)",
-                    "electric repair",
-                    "fast talk",
-                    "fighting (brawl)",
-                    "firearms (handgun)",
-                    "firearms (rifle/shotgun)",
-                    "first aid",
-                    "history",
-                    "intimidate",
-                    "jump",
-                    "language (other)",
-                    "language (own)",
-                    "law",
-                    "library use",
-                    "listen",
-                    "locksmith",
-                    "mechanical repair",
-                    "medicine",
-                    "natural world",
-                    "navigate",
-                    "occult",
-                    "operate heavy machine",
-                    "persuade",
-                    "pilot",
-                    "psychology",
-                    "psychoanalysis",
-                    "ride",
-                    "science",
-                    "sleight of hand",
-                    "spot hidden",
-                    "stealth",
-                    "survival",
-                    "swim",
-                    "throw",
-                    "track"
-            };
-
-            return skillsArray;
-
-        }
-
-    }
-
-    public static class rollDice {
-
-        public static int rollDSix(int numDice) {
-
-            Random random = new Random();
-
-            int i;
-            int randomInteger = 0;
-            int totalInt = 0;
-
-            // Roll them bones! No zeroes, though
-            for (i = 0; i < numDice; i++) {
-                randomInteger = random.nextInt(6) + 1;
-
-                totalInt = totalInt + randomInteger;
+            characteristics(String name) {
+                this.characteristic = name;
             }
 
-            return totalInt;
-        }
+            @Override
+            public String toString() {
+                return characteristic;
+            }
+        };
+
+        public enum skills { Accounting, Anthropology, Appraise, Archaeology, ArtCraft, Charm, Climb, CreditRating, ChtulhuMythos, Disguise, Dodge, DriveAuto, ElectricRepair, FastTalk, FightingBrawl, FirearmsHandgun, FirearmsRifleShotgun, FirstAid, History, Intimidate, Jump, LanguageOther, LanguageOwn, Law, LibraryUse, Listen, Locksmith, MechanicalRepair, Medicine, NaturalWorld, Navigate, Occult, OperateHeavyMachine, Persuade, Pilot, Psychology, Psychoanalysis, Ride, Science, SleightOfHand, SpotHidden, Stealth, Survival, Swim, Throw, Track };
+
+        public enum occupations { Antiquarian, Artist, Athlete, Author, Clergy, Criminal, Dilettante, DoctorOfMedicine, Drifter, Engineer, Entertainer, Farmer, Journalist, Lawyer, Librarian, MilitaryOfficer, Missionary, Musician, Parapsychologist, PoliceDetective, PoliceOfficer, PrivateInvestigator, Professor, Soldier, TribeMember, Zealot};
+
     }
 
     public static class newCharacterData {
@@ -207,25 +67,35 @@ public class Main {
 
         static {
             try {
-                charName = newCharacterName(Globals.apiUrl);
+                charName = newCharacterName(com.cthulhu.Globals.apiUrl);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        private static String strVal;
-        private static String intelVal;
-        private static String conVal;
-        private static String sizeVal;
-        private static String dexVal;
-        private static String appVal;
-        private static String powVal;
-        private static String eduVal;
+        // Vars for the main characteristic stats
+        private static String strVal; // Strength
+        private static String intelVal; // Intelligence
+        private static String conVal; // Constitution
+        private static String sizeVal; // Size
+        private static String dexVal; // Dexterity
+        private static String appVal; // Appearance
+        private static String powVal; // Power
+        private static String eduVal; // Education
+
+        private static String luckVal = "Luck: " + Integer.toString(com.cthulhu.RollDice.rollDSix(3));
+
+        // Derived attributes
+        private static int conBase;
+        private static int sizeBase;
+
+        private static String hitPoints;
+
 
         public static String newCharacterName(String url) throws IOException {
 
             // Hit that API and fetch the data
-            JSONObject json = JSONFetch.readJsonFromUrl(url);
+            JSONObject json = com.cthulhu.NameFetch.readJsonFromUrl(Globals.apiUrl);
 
             String name = (String) json.get("name");
 
@@ -235,57 +105,57 @@ public class Main {
 
         public static void configureStats() {
 
-            String[] skillsToConfigure = characterOptions.characteristics();
 
             int i;
 
-            for (i = 0; i < skillsToConfigure.length; i++) {
+            for (characterOptions.characteristics characteristic : characterOptions.characteristics.values()) {
 
                 int thisScore;
 
-                String thisSkill = skillsToConfigure[i];
-
                 // Switch to determine stat and assign score
-                switch(thisSkill) {
+                switch(characteristic.toString()) {
 
                     case "strength":
-                       thisScore = rollDice.rollDSix(3);
-                       strVal = "STR: " + Integer.toString(thisScore);
+                       thisScore = com.cthulhu.RollDice.rollDSix(3);
+                       strVal = "STR: " + Integer.toString(thisScore * 5) + "\t" + (thisScore * 5) / 2 + "\t" + thisScore;
                        break;
 
                     case "dexterity":
-                        thisScore = rollDice.rollDSix(3);
-                        dexVal = "DEX: " + Integer.toString(thisScore);
+                        thisScore = com.cthulhu.RollDice.rollDSix(3);
+                        dexVal = "DEX: " + Integer.toString(thisScore * 5) + "\t" + (thisScore * 5) / 2 + "\t" + thisScore;
 
                     case "intelligence":
-                        thisScore = rollDice.rollDSix(2);
-                        intelVal = "INT: " + Integer.toString(thisScore + 6);
+                        thisScore = com.cthulhu.RollDice.rollDSix(2);
+                        intelVal = "INT: " + Integer.toString((thisScore + 6) * 5) + "\t" + (((thisScore + 6) * 5) / 2) + "\t" + (thisScore + 6);
 
                     case "constitution":
-                        thisScore = rollDice.rollDSix(3);
-                        conVal = "CON: " + Integer.toString(thisScore);
+                        thisScore = com.cthulhu.RollDice.rollDSix(3);
+                        conBase = thisScore;
+                        conVal = "CON: " + Integer.toString(thisScore * 5) + "\t" + (thisScore * 5) / 2 + "\t" + thisScore;
 
                     case "appearance":
-                        thisScore = rollDice.rollDSix(3);
-                        appVal = "APP: " + Integer.toString(thisScore);
+                        thisScore = com.cthulhu.RollDice.rollDSix(3);
+                        appVal = "APP: " + Integer.toString(thisScore * 5) + "\t" + (thisScore * 5) / 2 + "\t" + thisScore;
 
                     case "power":
-                        thisScore = rollDice.rollDSix(3);
-                        powVal = "POW: " + Integer.toString(thisScore);
+                        thisScore = com.cthulhu.RollDice.rollDSix(3);
+                        powVal = "POW: " + Integer.toString(thisScore * 5) + "\t" + (thisScore * 5) / 2 + "\t" + thisScore;
 
                     case "size":
-                        thisScore = rollDice.rollDSix(2);
-                        sizeVal = "SIZ: " + Integer.toString(thisScore + 6);
+                        thisScore = com.cthulhu.RollDice.rollDSix(2);
+                        sizeBase = thisScore;
+                        sizeVal = "SIZ: " + Integer.toString((thisScore + 6) * 5) + "\t" + (((thisScore + 6) * 5) / 2) + "\t" + (thisScore + 6);
 
                     case "education":
-                        thisScore = rollDice.rollDSix(2);
-                        eduVal = "EDU: " + Integer.toString(thisScore + 6);
-
+                        thisScore = com.cthulhu.RollDice.rollDSix(2);
+                        eduVal = "EDU: " + Integer.toString((thisScore + 6) * 5) + "\t" + (((thisScore + 6) * 5) / 2) + "\t" + (thisScore + 6);
 
                     default:
                         break;
                 }
             }
+
+            hitPoints = "Hit Points: " + Integer.toString(conBase + sizeBase);
         }
 
     }
