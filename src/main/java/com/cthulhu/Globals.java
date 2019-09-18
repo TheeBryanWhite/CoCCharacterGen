@@ -2,6 +2,6 @@ package com.cthulhu;
 
 public class Globals {
 
-    public static String apiUrl = "https://api.namefake.com/";
+    public static String apiUrl = "https://api.namefake.com/english-united-states";
 
 }
